@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Video } from 'lucide-react';
 import { Dropdown } from '../ui/Dropdown';
+import { Zoom, VideoIcon } from 'lucide-react';
 
 interface IntegrationDropdownProps {
   onSelect?: (integration: string) => void;
@@ -24,17 +25,17 @@ export const IntegrationDropdown: React.FC<IntegrationDropdownProps> = ({
     {
       value: 'zoom',
       label: 'Zoom',
-      icon: <Video className="h-4 w-4 text-blue-500" />
+      icon: <Video className="h-5 w-5 text-blue-500" />
     },
     {
       value: 'meet',
       label: 'Google Meet',
-      icon: <Video className="h-4 w-4 text-green-500" />
+      icon: <Video className="h-5 w-5 text-green-500" />
     },
     {
       value: 'teams',
       label: 'Microsoft Teams',
-      icon: <Video className="h-4 w-4 text-purple-500" />
+      icon: <Video className="h-5 w-5 text-purple-500" />
     }
   ];
 
@@ -45,8 +46,8 @@ export const IntegrationDropdown: React.FC<IntegrationDropdownProps> = ({
       onChange={handleIntegrationChange}
       placeholder="Select platform"
       className={`${className}`}
-      buttonClassName="text-xs py-1 px-3 bg-blue-600 hover:bg-blue-700 border-blue-700 text-white shadow-sm transition-all duration-200 font-medium rounded-full"
-      menuClassName="w-40 right-0"
+      buttonClassName="text-xs py-1.5 px-4 bg-blue-500 hover:bg-blue-600 border-blue-600 text-white shadow-sm transition-all duration-200 font-medium rounded-full"
+      menuClassName="w-48 right-0 mt-2 border border-gray-100"
     />
   );
 };

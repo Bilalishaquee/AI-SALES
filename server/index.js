@@ -29,7 +29,7 @@ import meetingRoutes from './routes/meetings.js';
 import documentRoutes from './routes/documents.js';
 // import transcriptRoutes from './routes/transcripts.js';
 // import aiRoutes from './routes/ai.js';
-// import analyticsRoutes from './routes/analytics.js';
+import analyticsRoutes from './routes/analytics.js';
 
 // Import services
 import aiService from './services/aiService.js';
@@ -125,7 +125,7 @@ app.use('/api/meetings', meetingRoutes);
 app.use('/api/documents', documentRoutes);
 // app.use('/api/transcripts', transcriptRoutes);
 // app.use('/api/ai', aiRoutes);
-// app.use('/api/analytics', analyticsRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Health check endpoint
 app.get('/api/health', async (req, res) => {

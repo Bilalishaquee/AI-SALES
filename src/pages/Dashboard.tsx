@@ -221,180 +221,187 @@ export const Dashboard: React.FC = () => {
           </motion.div>
       </div>
 
-      {/* Recent Calls */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-800">Recent Calls</h2>
-          <Button variant="ghost" size="sm" onClick={() => window.location.href = '/calls'}>
-            View All
-          </Button>
-        </div>
-
-        <div className="p-6">
-          <Card>
-            {loading ? (
-              <div className="space-y-4">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="flex items-center">
-                    <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
-                    <div className="ml-4 flex-1">
-                      <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4 mb-2"></div>
-                      <div className="h-3 bg-gray-200 rounded animate-pulse w-1/2"></div>
-                    </div>
-                    <div className="w-16 h-6 bg-gray-200 rounded animate-pulse"></div>
-                  </div>
-                ))}
-              </div>
-            ) : recentCalls && recentCalls.length > 0 ? (
+      {/* Main Content Area with 2-column layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column - Quick Actions */}
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+            <div className="p-6 border-b border-gray-100">
+              <h2 className="text-xl font-semibold text-gray-800">Quick Actions</h2>
+            </div>
+            <div className="p-6 space-y-4">
+              <Button 
+                variant="primary" 
+                className="w-full justify-center bg-blue-500 hover:bg-blue-600 text-white shadow-md" 
+                onClick={() => window.location.href = '/calls/new'}
+              >
+                <Phone className="h-5 w-5 mr-2" />
+                Start Call
+              </Button>
+              <Button 
+                variant="primary" 
+                className="w-full justify-center bg-green-500 hover:bg-green-600 text-white shadow-md" 
+                onClick={() => window.location.href = '/documents/upload'}
+              >
+                <FileText className="h-5 w-5 mr-2" />
+                Upload Document
+              </Button>
+              <Button 
+                variant="primary" 
+                className="w-full justify-center bg-purple-500 hover:bg-purple-600 text-white shadow-md" 
+                onClick={() => window.location.href = '/analytics'}
+              >
+                <BarChart3 className="h-5 w-5 mr-2" />
+                View Analytics
+              </Button>
+            </div>
+          </div>
+          
+          {/* Today's Performance */}
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-gray-100">
+              <h2 className="text-xl font-semibold text-gray-800">Today's Performance</h2>
+            </div>
+            <div className="p-6 space-y-5">
+              {loading ? (
                 <div className="space-y-4">
-                  {recentCalls.map((call, index) => (
-                    <motion.div
-                      key={call._id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                      onClick={() => window.location.href = `/calls/${call._id}`}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center text-white font-medium">
-                          {call.title?.charAt(0) || 'C'}
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-900">{call.title || 'Untitled Call'}</p>
-                          <p className="text-sm text-gray-600">
-                            {formatDuration(call.duration || 0)} • {new Date(call.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="flex justify-between">
+                        <div className="h-4 bg-gray-200 rounded animate-pulse w-1/3"></div>
+                        <div className="h-4 bg-gray-200 rounded animate-pulse w-16"></div>
                       </div>
-                      <div className="flex items-center space-x-4">
-                        <div className={`
-                          px-3 py-1 rounded-full text-sm font-medium
-                          ${(call.score || getCallScore(call.performanceData)) >= 80 
-                            ? 'bg-success-100 text-success-600' 
-                            : (call.score || getCallScore(call.performanceData)) >= 70 
-                            ? 'bg-warning-100 text-warning-600'
-                            : 'bg-error-100 text-error-600'
-                          }
-                        `}>
-                          {call.score || getCallScore(call.performanceData)}%
-                        </div>
-                        <span className="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs font-medium">
-                          {call.status}
-                        </span>
-                      </div>
-                    </motion.div>
+                      <div className="h-2 bg-gray-200 rounded-full w-full"></div>
+                    </div>
                   ))}
                 </div>
-            ) : (
-              <div className="text-center py-8">
-                <Phone className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">No calls yet. Start your first call to see it here!</p>
-              </div>
-            )}
-              
-          </Card>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-800">Quick Actions</h2>
-        </div>
-        <div className="p-6 space-y-4">
-          <Button 
-            variant="primary" 
-            className="w-full justify-center" 
-            onClick={() => window.location.href = '/calls/new'}
-          >
-            <Phone className="h-5 w-5 mr-2" />
-            Start Call
-          </Button>
-          <Button 
-            variant="outline" 
-            className="w-full justify-center" 
-            onClick={() => window.location.href = '/documents/upload'}
-          >
-            <FileText className="h-5 w-5 mr-2" />
-            Upload Document
-          </Button>
-          <Button 
-            variant="outline" 
-            className="w-full justify-center" 
-            onClick={() => window.location.href = '/analytics'}
-          >
-            <BarChart3 className="h-5 w-5 mr-2" />
-            View Analytics
-          </Button>
-        </div>
-      </div>
-
-      {/* Today's Performance */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
-          <h2 className="text-xl font-semibold text-gray-800">Today's Performance</h2>
-        </div>
-        <div className="p-6 space-y-5">
-          {loading ? (
-            <div className="space-y-4">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="space-y-2">
-                  <div className="flex justify-between">
-                    <div className="h-4 bg-gray-200 rounded animate-pulse w-1/3"></div>
-                    <div className="h-4 bg-gray-200 rounded animate-pulse w-16"></div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600">Calls Completed</span>
+                      <span className="font-medium">
+                        {analyticsData?.totalCalls || 0}/10
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-primary-600 h-2 rounded-full" 
+                        style={{ width: `${Math.min(100, ((analyticsData?.totalCalls || 0) / 10) * 100)}%` }} 
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 bg-gray-200 rounded-full w-full"></div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600">AI Suggestions Used</span>
+                      <span className="font-medium">
+                        {Math.round((analyticsData?.aiSuggestionsUsedRate || 0) * 100)}/100
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-success-600 h-2 rounded-full" 
+                        style={{ width: `${(analyticsData?.aiSuggestionsUsedRate || 0) * 100}%` }} 
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span className="text-gray-600">Success Rate</span>
+                      <span className="font-medium">
+                        {Math.round((analyticsData?.successRate || 0) * 100)}%
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-accent-600 h-2 rounded-full" 
+                        style={{ width: `${(analyticsData?.successRate || 0) * 100}%` }} 
+                      />
+                    </div>
+                  </div>
                 </div>
-              ))}
+              )}
             </div>
-          ) : (
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600">Calls Completed</span>
-                  <span className="font-medium">
-                    {analyticsData?.totalCalls || 0}/10
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-primary-600 h-2 rounded-full" 
-                    style={{ width: `${Math.min(100, ((analyticsData?.totalCalls || 0) / 10) * 100)}%` }} 
-                  />
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600">AI Suggestions Used</span>
-                  <span className="font-medium">
-                    {Math.round((analyticsData?.aiSuggestionsUsedRate || 0) * 100)}/100
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-success-600 h-2 rounded-full" 
-                    style={{ width: `${(analyticsData?.aiSuggestionsUsedRate || 0) * 100}%` }} 
-                  />
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-gray-600">Success Rate</span>
-                  <span className="font-medium">
-                    {Math.round((analyticsData?.successRate || 0) * 100)}%
-                  </span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-accent-600 h-2 rounded-full" 
-                    style={{ width: `${(analyticsData?.successRate || 0) * 100}%` }} 
-                  />
-                </div>
-              </div>
+          </div>
+        </div>
+        
+        {/* Right Column - Recent Calls */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <h2 className="text-xl font-semibold text-gray-800">Recent Calls</h2>
+              <Button variant="ghost" size="sm" onClick={() => window.location.href = '/calls'}>
+                View All
+              </Button>
             </div>
-          )}
+
+            <div className="p-6">
+              <Card>
+                {loading ? (
+                  <div className="space-y-4">
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="flex items-center">
+                        <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
+                        <div className="ml-4 flex-1">
+                          <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4 mb-2"></div>
+                          <div className="h-3 bg-gray-200 rounded animate-pulse w-1/2"></div>
+                        </div>
+                        <div className="w-16 h-6 bg-gray-200 rounded animate-pulse"></div>
+                      </div>
+                    ))}
+                  </div>
+                ) : recentCalls && recentCalls.length > 0 ? (
+                    <div className="space-y-4">
+                      {recentCalls.map((call, index) => (
+                        <motion.div
+                          key={call._id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                          onClick={() => window.location.href = `/calls/${call._id}`}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <div className="flex items-center space-x-4">
+                            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center text-white font-medium">
+                              {call.title?.charAt(0) || 'C'}
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">{call.title || 'Untitled Call'}</p>
+                              <p className="text-sm text-gray-600">
+                                {formatDuration(call.duration || 0)} • {new Date(call.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-4">
+                            <div className={`
+                              px-3 py-1 rounded-full text-sm font-medium
+                              ${(call.score || getCallScore(call.performanceData)) >= 80 
+                                ? 'bg-success-100 text-success-600' 
+                                : (call.score || getCallScore(call.performanceData)) >= 70 
+                                ? 'bg-warning-100 text-warning-600'
+                                : 'bg-error-100 text-error-600'
+                              }
+                            `}>
+                              {call.score || getCallScore(call.performanceData)}%
+                            </div>
+                            <span className="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs font-medium">
+                              {call.status}
+                            </span>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Phone className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500">No calls yet. Start your first call to see it here!</p>
+                  </div>
+                )}
+                  
+              </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -28,6 +28,7 @@ export const DocumentsPage: React.FC = () => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'processed' | 'pending'>('all');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   
   // Fetch documents when component mounts
   useEffect(() => {
@@ -97,6 +98,21 @@ export const DocumentsPage: React.FC = () => {
       : 'text-warning-600 bg-warning-100';
   };
 
+  // Handle file selection
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      setSelectedFile(file);
+      
+      // Auto-fill the document name field with the file name (without extension)
+      const fileName = file.name.split('.').slice(0, -1).join('.');
+      const nameInput = document.getElementById('file-name') as HTMLInputElement;
+      if (nameInput && !nameInput.value) {
+        nameInput.value = fileName;
+      }
+    }
+  };
+
   // Handle document upload
   const handleFileUpload = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -108,6 +124,7 @@ export const DocumentsPage: React.FC = () => {
       
       const newDocument = await APIService.uploadDocument(formData);
       setDocuments(prev => [newDocument, ...prev]);
+      setSelectedFile(null); // Reset selected file after successful upload
       
       alert('Document uploaded successfully');
     } catch (err) {
@@ -365,15 +382,68 @@ export const DocumentsPage: React.FC = () => {
       {/* Upload Modal */}
       <Modal
         isOpen={isUploadModalOpen}
-        onClose={() => setIsUploadModalOpen(false)}
+        onClose={() => {
+          setIsUploadModalOpen(false);
+          setSelectedFile(null);
+          // Reset form fields
+          setTimeout(() => {
+            const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+            const nameInput = document.getElementById('file-name') as HTMLInputElement;
+            const tagsInput = document.getElementById('file-tags') as HTMLInputElement;
+            if (fileInput) fileInput.value = '';
+            if (nameInput) nameInput.value = '';
+            if (tagsInput) tagsInput.value = '';
+          }, 300); // Small delay to ensure modal is closed first
+        }}
         title="Add Document"
       >
         <div className="space-y-6">
           <div>
             <h3 className="text-lg font-medium text-gray-900 mb-4">Upload File</h3>
             <form onSubmit={handleFileUpload}>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+              <div 
+                className={`border-2 border-dashed ${selectedFile ? 'border-primary-300 bg-primary-50' : 'border-gray-300'} rounded-lg p-6 text-center`}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.currentTarget.classList.add('border-primary-500');
+                }}
+                onDragLeave={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.currentTarget.classList.remove('border-primary-500');
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.currentTarget.classList.remove('border-primary-500');
+                  
+                  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    const file = e.dataTransfer.files[0];
+                    // Check if file type is acceptable
+                    const acceptedTypes = ['.pdf', '.docx', '.txt', 'application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+                    const fileType = file.type || file.name.split('.').pop();
+                    
+                    if (acceptedTypes.some(type => fileType.includes(type))) {
+                      // Update the file input
+                      const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+                      if (fileInput) {
+                        // Create a DataTransfer to set the file input value
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(file);
+                        fileInput.files = dataTransfer.files;
+                        
+                        // Trigger change event manually
+                        const event = new Event('change', { bubbles: true });
+                        fileInput.dispatchEvent(event);
+                      }
+                    } else {
+                      alert('Invalid file type. Please upload PDF, DOCX, or TXT files only.');
+                    }
+                  }
+                }}
+              >
+                <Upload className={`h-8 w-8 ${selectedFile ? 'text-primary-500' : 'text-gray-400'} mx-auto mb-2`} />
                 <p className="text-sm text-gray-600 mb-2">Drag and drop your file here, or click to browse</p>
                 <p className="text-xs text-gray-500">PDF, DOCX, TXT (Max 10MB)</p>
                 <input 
@@ -382,10 +452,40 @@ export const DocumentsPage: React.FC = () => {
                   className="hidden" 
                   id="file-upload" 
                   required 
+                  onChange={handleFileSelect}
+                  accept=".pdf,.docx,.txt"
                 />
-                <label htmlFor="file-upload">
-                  <Button type="button" className="mt-4">Select File</Button>
-                </label>
+                {selectedFile ? (
+                  <div className="mt-4">
+                    <div className="flex items-center justify-center space-x-2 text-sm text-primary-600">
+                      <FileText className="h-4 w-4" />
+                      <span className="font-medium truncate max-w-xs">{selectedFile.name}</span>
+                      <span className="text-xs text-gray-500">({(selectedFile.size / 1024).toFixed(1)} KB)</span>
+                    </div>
+                    <Button 
+                      type="button" 
+                      variant="secondary"
+                      className="mt-2"
+                      onClick={() => {
+                        setSelectedFile(null);
+                        const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+                        if (fileInput) fileInput.value = '';
+                      }}
+                    >
+                      Change File
+                    </Button>
+                  </div>
+                ) : (
+                  <label htmlFor="file-upload">
+                    <Button 
+                      type="button" 
+                      className="mt-4"
+                      onClick={() => document.getElementById('file-upload')?.click()}
+                    >
+                      Select File
+                    </Button>
+                  </label>
+                )}
               </div>
               
               <div className="mt-4">

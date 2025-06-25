@@ -75,16 +75,16 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
       {isOpen && (
         <div 
-          className={`absolute z-10 mt-1 w-full bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transform transition-all duration-200 origin-top-right ${menuClassName}`}
+          className={`absolute z-10 mt-1 w-full bg-white rounded-md shadow-lg border border-gray-100 focus:outline-none transform transition-all duration-200 origin-top-right ${menuClassName}`}
         >
-          <div className="py-1 max-h-60 overflow-auto">
+          <div className="py-1">
             {options.map((option) => (
               <button
                 key={option.value}
-                className={`${selectedOption?.value === option.value ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700'} flex items-center justify-start w-full px-4 py-3 text-sm hover:bg-gray-50 transition-colors duration-150`}
+                className={`${selectedOption?.value === option.value ? 'bg-blue-50 text-blue-600 font-medium' : 'text-gray-700'} flex items-center justify-start w-full px-4 py-3 text-sm hover:bg-gray-50 transition-colors duration-150`}
                 onClick={() => handleSelect(option)}
               >
-                {option.icon && <span className="mr-3 flex items-center justify-center w-5">{option.icon}</span>}
+                {option.icon && <span className="mr-3 flex items-center justify-center w-6">{option.icon}</span>}
                 <span className="whitespace-nowrap">{option.label}</span>
               </button>
             ))}
