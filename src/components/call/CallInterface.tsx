@@ -127,7 +127,7 @@ export const CallInterface: React.FC<CallInterfaceProps> = ({
               {isOverlayMode && (
                 <button
                   onClick={() => setIsMinimized(true)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                  className="text-blue-500 hover:text-blue-600 transition-colors duration-200"
                 >
                   <Minimize2 className="h-5 w-5" />
                 </button>
