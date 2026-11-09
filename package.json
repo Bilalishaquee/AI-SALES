@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node init && concurrently \"npm run server\" \"vite\"",
-    "build": "node init && vite build",
+    "dev": "concurrently \"npm run server\" \"vite\"",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "nodemon server/index.js",
